@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import com.coolweather.android.R;
 import com.coolweather.android.db.City;
@@ -98,11 +100,18 @@ public class ChooseAreaFragment extends Fragment {
                     selectedCity = cityList.get(position);
                     queryCounties();
                 }else if(currentLeve==LEVEL_COUNTY){
-                    String weatherId = countyList.get(position).getWeatherId();
-                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                     String weatherId = countyList.get(position).getWeatherId();
+                    if(getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if(getActivity() instanceof WeatherActivity){
+                        WeatherActivity weatherActivity = (WeatherActivity)getActivity();
+                        weatherActivity.drawerLayout.closeDrawers();
+                        weatherActivity.swipeRefesh.setRefreshing(true);
+                        weatherActivity.requestWeather(weatherId);
+                    }
                 }
             }
         });
